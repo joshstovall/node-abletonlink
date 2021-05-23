@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+	<body>
+		<h1>Ableton Link Node.js</h1>
+
+		<script src="/socket.io/socket.io.js"></script>
+		
+		<table>
+			<tr>
+				<td>BPM</td>
+				<td>Interval</td>
+				<td>Quantum</td>
+			</tr>
+			<tr>
+				<td><input id="bpm"      oninput="updateTempo(this.value)"     type="number" min="20" max="999"   step="0.1"/></td>
+				<td><input id="interval" oninput="updateInterval(this.value)"  type="number" min="1"  max="10000" step="1"  /></td>
+				<td><input id="quantum"  oninput="updateQuantum(this.value)"   type="number" min="1"  max="10000" step="1"  /></td>
+			</tr>
+		</table>
+		<table>
+			<tr>
+				<td>Beat</td>
+				<td>Phase</td>
+			</tr>
+			<tr>
+				<td><input id="beat"  type="number" min="0" max="999" step="any" readonly/></td>
+				<td><input id="phase" type="number" min="0" max="999" step="any"/></td>
+			</tr>
+		</table>
+		
+				
+		
+		<button  id="stop"  onclick="stopLink()">Stop</button>
+		<button  id="start" onclick="startLink()" disabled>Start</button>
+
+<script>
+const socket = io('http://localhost:7777');
+
+socket.on('link', function(data) {
+	
+	var bpm   = document.getElementById("bpm")
+	if (bpm !== document.activeElement){	if(data[2] != bpm.value) bpm.value = data[2]; }
+	
+	
+	var beat   = document.getElementById("beat")
+	if (beat !== document.activeElement){	if(data[0] != beat.value) beat.value = data[0]; }
+	
+	var phase   = document.getElementById("phase")
+	if (phase !== document.activeElement){ if(data[1] != phase.value) phase.value = data[1]; }
+	
+	var quantum   = document.getElementById("quantum")
+	if (quantum !== document.activeElement){ if(data[3] != quantum.value) quantum.value = data[3]; }
+	
+	var interval   = document.getElementById("interval")
+	if (interval !== document.activeElement){ if(data[4] != interval.value) interval.value = data[4];	}
+	
+});
+		
+		
+		
+socket.on('tempo', function(data) {
+	document.getElementById("bpm").value = data[2];
+});
+	
+function startLink(){
+	socket.emit('start', document.getElementById("interval").value);
+	document.querySelector("#start").disabled = "disabled";
+	document.querySelector("#stop").disabled = false;
+}
+
+function stopLink(){
+	socket.emit('stop');
+	document.querySelector("#start").disabled = false;
+	document.querySelector("#stop").disabled = "disabled";
+}
+
+function updateTempo(e){
+	socket.emit('tempo', parseFloat(e) );
+}
+function updateInterval(e){
+	socket.emit('interval', parseInt(e));
+}
+
+function updateQuantum(e){
+	socket.emit('quantum', parseInt(e));
+}
+		</script>
+	</body>
+</html>

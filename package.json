@@ -17,8 +17,10 @@
   "author": "2bit [i@2bit.jp]",
   "license": "MIT",
   "dependencies": {
+    "abletonlink": "^0.1.1",
     "bindings": "^1.5.0",
-    "node-addon-api": "^2.0.0"
+    "node-addon-api": "^2.0.0",
+    "socket.io": "^4.1.2"
   },
   "engines": {
     "node": ">=6.0.0"
